@@ -1,5 +1,6 @@
 package tests;
 
+import com.codeborne.selenide.Configuration;
 import constants.IConstants;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import objects.Account;
@@ -11,10 +12,14 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import pages.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static com.codeborne.selenide.WebDriverRunner.setWebDriver;
+
 public class BaseTest implements ITestConstants, IConstants {
-    WebDriver driver;
     HomePage homePage;
     AccountListPage accountListPage;
     NewAccountModalPage newAccountModalPage;
@@ -24,45 +29,37 @@ public class BaseTest implements ITestConstants, IConstants {
     AccountPage accountPage;
     ContactListPage contactListPage;
 
-
-    /**
-     * Inits  pages
-     */
     public void initPages() {
-        homePage =  new HomePage(driver);
-        accountListPage = new AccountListPage(driver);
-        newAccountModalPage = new NewAccountModalPage(driver);
-        loginPage =  new LoginPage(driver);
+        homePage =  new HomePage();
+        accountListPage = new AccountListPage();
+        newAccountModalPage = new NewAccountModalPage();
+        loginPage =  new LoginPage();
         account = new Account();
-        accountPage =  new AccountPage(driver);
-        newContactModalPage = new NewContactModalPage(driver);
-        contactListPage =  new ContactListPage(driver);
+        accountPage =  new AccountPage();
+        newContactModalPage = new NewContactModalPage();
+        contactListPage =  new ContactListPage();
     }
 
-    /**
-     * Init test.
-     * This method performed before the test method
-     */
     @BeforeMethod
     public void initTest(){
         ChromeOptions options = new ChromeOptions();
+        Map<String, Object> prefs = new HashMap<>();
         options.addArguments("--disable-popup-blocking");
-        options.addArguments("--disable-notifications");
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.manage().window().maximize();
-        PageFactory.initElements(driver,this);
+        prefs.put("profile.default_content_setting_values.notifications", 2);
+        options.setExperimentalOption("prefs", prefs);
+        WebDriver driver = new ChromeDriver(options);
+        setWebDriver(driver);
+
+        Configuration.browser = "chrome";
+        Configuration.timeout = 15000;
+        Configuration.headless = false;
+        Configuration.browserSize = "1024x768";
         initPages();
     }
 
-    /**
-     * End test.
-     * This method performed after test method
-     */
     @AfterMethod
     public void endTest() {
-        driver.quit();
+        getWebDriver().quit();
     }
 }
 

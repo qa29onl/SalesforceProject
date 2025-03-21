@@ -3,8 +3,10 @@ package elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
+
 public class Dropdown {
-    WebDriver driver;
     String label;
 
     private static final String ACCOUNT_DROPDOWN_XPATH = "//*[contains(text(), '%s')]/ancestor::*[contains(@slot, 'inputField')]//button";
@@ -14,23 +16,22 @@ public class Dropdown {
     private static final String ACCOUNT_SELECT_ACCOUNT_XPATH =
             "//label[contains(text(),'Account Name')]/ancestor::lightning-grouped-combobox[contains(@class,'slds-form-element')]//*[@title='%s']";
 
-    public Dropdown(WebDriver driver, String label) {
-        this.driver = driver;
+    public Dropdown(String label) {
         this.label = label;
     }
 
     public void accountSelectOption(String option) {
-        driver.findElement(By.xpath(String.format(ACCOUNT_DROPDOWN_XPATH, label))).click();
-        driver.findElement(By.xpath(String.format(ACCOUNT_DROPDOWN_OPTION_XPATH, option))).click();
+        $x(String.format(ACCOUNT_DROPDOWN_XPATH, label)).click();
+        $x(String.format(ACCOUNT_DROPDOWN_OPTION_XPATH, option)).click();
     }
 
     public void contactSelectOption(String option) {
-        driver.findElement(By.xpath(String.format(CONTACT_DROPDOWN_XPATH,label))).click();
-        driver.findElement(By.xpath(String.format(CONTACT_SELECT_OPTION_XPATH,option))).click();
+        $x(String.format(CONTACT_DROPDOWN_XPATH,label)).click();
+        $x((String.format(CONTACT_SELECT_OPTION_XPATH,option))).click();
     }
 
     public void contactSelectAccount(String option) {
-        new Input(driver, "Account Name").writeTextInDropdownField(option);
-        driver.findElement(By.xpath(String.format(ACCOUNT_SELECT_ACCOUNT_XPATH,option))).click();
+        new Input("Account Name").writeTextInDropdownField(option);
+        $x(String.format(ACCOUNT_SELECT_ACCOUNT_XPATH,option)).click();
     }
 }
